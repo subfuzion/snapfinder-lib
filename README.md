@@ -1,19 +1,17 @@
-SNAPfinder
-==========
+snapfinder-lib
+==============
 
 [API Documentation][API]
 
 Introduction
 ------------
-SNAPfinder is a REST API for locating retailers that participate in the SNAP (formerly known as Food Stamps) program.
+snapfinder-lib is a node library for locating retailers that participate in the SNAP (formerly known as Food Stamps) program. It uses data provided by the USDA and imported daily into a MongoDB database to return nearby retailers for a given address, region, or geographic area in U.S. The library can be used to support developers who wish to import data and query their own MongoDB instance through this library instead of accessing the hosted REST API. The hosted REST API also uses this library and is also open source as a separate project.
 
-The API was developed as a collaboration between the GSA and the private sector, sponsored by [ITSource Technology Inc.][ITSource], as an Open Source project in support of the Federal Government's commitment to Open Data.
+spapfinder-lib was developed as a collaboration between the GSA and the private sector, sponsored by [ITSource Technology Inc.][ITSource], as an Open Source project in support of the Federal Government's commitment to Open Data.
 
-The API can be used to support both open source and commercial app development, as well as to support state and private websites, or any agency, organization, or enterprise that wishes to use or incorporate information regarding SNAP retailer locations.
+snapfinder-lib can be used to support both open source and commercial app development, as well as to support state and private websites, or any agency, organization, or enterprise that wishes to use or incorporate information regarding SNAP retailer locations.
 
-Data is harvested daily from files published by the USDA, stored in a NoSQL cloud database, and exposed in JSON format via a REST API.
-
-The API is programmed using Node.js and data is stored using MongoDB. The project is Open Source under the MIT License and available on GitHub.
+The project is Open Source under the MIT License and available on GitHub.
 
 
 Goals
