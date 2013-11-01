@@ -1,5 +1,6 @@
 exports.connect = connect;
-exports.findStoresInRange = findStoresInRange;
+exports.findStoresInRangeLocation = findStoresInRangeLocation;
+exports.findStoresInRangeAddress = findStoresInRangeAddress;
 exports.findStoresInZip = findStoresInZip;
 exports.sortStoresByDistance = sortStoresByDistance;
 
@@ -18,26 +19,42 @@ function connect(mongodbUri, callback) {
   });
 };
 
+// private helper
+function findStoresInRange(georesult, range, callback) {
+  snapdb.findStoresInRange(georesult, range, function(err, stores) {
+    if (err) return callback(err);
+
+    var sorted = sortStoresByDistance(georesult.location, stores);
+    georesult.stores = _.filter(sorted, function(store) { return store.distance <= range; });
+    return callback(null, georesult);
+  });
+}
+
 /**
  * Find nearby stores in ascending distance order.
- * @param address a valid address, address fragment, or pair of coordinates
+ * @param locaton an object with lat and lng properties
  * @param range a distance in miles, defaults to 3
  */
-function findStoresInRange(address, range, callback) {
+function findStoresInRangeLocation(location, range, callback) {
+  range = range || 3;
+
+  geo.reverseGeocode(location, function(err, georesult) {
+    if (err) return callback(err);
+    findStoresInRange(georesult, range, callback);
+  });
+}
+  
+/**
+ * Find nearby stores in ascending distance order.
+ * @param address a valid address or address fragment
+ * @param range a distance in miles, defaults to 3
+ */
+function findStoresInRangeAddress(address, range, callback) {
   range = range || 3;
 
   geo.geocode(address, function(err, georesult) {
     if (err) return callback(err);
-
-    snapdb.findStoresInRange(georesult.location, range, function(err, stores) {
-      if (err) return callback(err);
-
-      var sorted = sortStoresByDistance(georesult.location, stores);
-      georesult.stores = _.filter(sorted, function(store) {
-        return store.distance <= range;
-      });
-      return callback(null, georesult);
-    });
+    findStoresInRange(georesult, range, callback);
   });
 }
   
