@@ -1,5 +1,5 @@
 {
-  "name": "snapfinder",
+  "name": "snapfinder-lib",
   "version": "0.0.1",
   "description": "Open Data API to help citizens find retail stores that accept SNAP (food stamp) cards.",
   "main": "main.js",
