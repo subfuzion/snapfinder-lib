@@ -21,7 +21,7 @@ function connect(mongodbUri, callback) {
 
 // private helper
 function findStoresInRange(georesult, range, callback) {
-  snapdb.findStoresInRange(georesult, range, function(err, stores) {
+  snapdb.findStoresInRange(georesult.location, range, function(err, stores) {
     if (err) return callback(err);
 
     var sorted = sortStoresByDistance(georesult.location, stores);
