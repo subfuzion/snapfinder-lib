@@ -92,3 +92,12 @@ function sortStoresByDistance(location, stores) {
   return stores;
 }
 
+/**
+ * Get store by ID
+ * @param id the store _id property as a string. It will be properly
+ *           encoded in the binary format that Mongo expects.
+ */
+function getStore(id, callback) {
+  snapdb.getStore(id, callback);
+}
+
