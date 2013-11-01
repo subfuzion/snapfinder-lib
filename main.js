@@ -3,19 +3,20 @@ exports.findStoresInRange = findStoresInRange;
 exports.findStoresInZip = findStoresInZip;
 exports.sortStoresByDistance = sortStoresByDistance;
 
-var snapdb = require('./lib/snapdb')
+var _ = require('underscore')
+  , snapdb = require('./lib/snapdb')
   , geo = require('./lib/geo')
   ;
 
 /**
  * Connect to the snapdb mongo database.
  */
-function connect(mongodbUri, function (err, client) {
-  snapdb.connect(mongodbUri, function (err, client) {
+function connect(mongodbUri, callback) {
+  snapdb.connect(mongodbUri, function(err, client) {
     if (err) return callback(err);
     callback(null, client);
   });
-});
+};
 
 /**
  * Find nearby stores in ascending distance order.
