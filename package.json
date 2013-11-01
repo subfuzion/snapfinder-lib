@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/mocha test/test.js"
   },
-  "repository": "https://github.com/tonypujals/snapfinder.git",
+  "repository": "https://github.com/tonypujals/snapfinder-lib.git",
   "keywords": [
     "open data snap ebt gsa itsource"
   ],
