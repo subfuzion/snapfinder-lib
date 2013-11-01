@@ -3,6 +3,7 @@ exports.findStoresInRangeLocation = findStoresInRangeLocation;
 exports.findStoresInRangeAddress = findStoresInRangeAddress;
 exports.findStoresInZip = findStoresInZip;
 exports.sortStoresByDistance = sortStoresByDistance;
+exports.getStore = getStore;
 
 var _ = require('underscore')
   , snapdb = require('./lib/snapdb')
