@@ -7,6 +7,13 @@ snapfinder-lib
 * [snapfinder-api][snapfinder-api] - REST API built with snapfinder-lib (Node, Express)
 * [snapfinder][snapfinder] - a mobile-first web app that uses the API (Node, Express, EJS, Bootstrap 3)
 
+Installation
+------------
+
+    $ npm install snapfinder-lib
+
+https://npmjs.org/package/snapfinder-lib
+
 Introduction
 ------------
 snapfinder-lib is a node library for locating retailers that participate in the SNAP (formerly known as Food Stamps) program. It uses data provided by the USDA and imported daily into a MongoDB database to return nearby retailers for a given address, region, or geographic area in U.S. The library can be used to support developers who wish to import data and query their own MongoDB instance through this library instead of accessing the hosted REST API. The hosted REST API also uses this library and is also open source as a separate project.
