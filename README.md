@@ -3,10 +3,9 @@ snapfinder-lib
 
 [API Documentation][API]
 
-Related Projects
-----------------
-[snapfinder-api][snapfinder-api]
-[snapfinder][snapfinder]
+#### Related Projects
+* [snapfinder-api][snapfinder-api]
+* [snapfinder][snapfinder]
 
 Introduction
 ------------
@@ -129,5 +128,5 @@ Developers need:
 [GitHub]:            https://github.com/
 [C9Chrome]:          https://chrome.google.com/webstore/detail/cloud9-button-for-github/gkddhhofgajgmgfebhaiihlahjmjkmph?hl=en-US
 [Cloud9]:            https://c9.io/
-[snapfinder-api]:    https://github.com/tonypujals/snapfinder-api
 [snapfinder]:        https://github.com/tonypujals/snapfinder
+[snapfinder-api]:    https://github.com/tonypujals/snapfinder-api
