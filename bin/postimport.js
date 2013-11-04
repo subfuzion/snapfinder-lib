@@ -1,4 +1,5 @@
-// Mongo shell script to run after importing CSV data
+// Mongo script to run after importing CSV data
+// (called by the import shell script)
 
 function toTitleCase(str)
 {
