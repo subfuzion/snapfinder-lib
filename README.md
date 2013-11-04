@@ -4,8 +4,8 @@ snapfinder-lib
 [API Documentation][API]
 
 #### Related Projects
-* [snapfinder-api][snapfinder-api]
-* [snapfinder][snapfinder]
+* [snapfinder-api][snapfinder-api] - REST API built with snapfinder-lib (Node, Express)
+* [snapfinder][snapfinder] - a mobile-first web app that uses the API (Node, Express, EJS, Bootstrap 3)
 
 Introduction
 ------------
