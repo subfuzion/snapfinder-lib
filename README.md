@@ -3,6 +3,11 @@ snapfinder-lib
 
 [API Documentation][API]
 
+Related Projects
+----------------
+[snapfinder-api][snapfinder-api]
+[snapfinder][snapfinder]
+
 Introduction
 ------------
 snapfinder-lib is a node library for locating retailers that participate in the SNAP (formerly known as Food Stamps) program. It uses data provided by the USDA and imported daily into a MongoDB database to return nearby retailers for a given address, region, or geographic area in U.S. The library can be used to support developers who wish to import data and query their own MongoDB instance through this library instead of accessing the hosted REST API. The hosted REST API also uses this library and is also open source as a separate project.
@@ -124,3 +129,5 @@ Developers need:
 [GitHub]:            https://github.com/
 [C9Chrome]:          https://chrome.google.com/webstore/detail/cloud9-button-for-github/gkddhhofgajgmgfebhaiihlahjmjkmph?hl=en-US
 [Cloud9]:            https://c9.io/
+[snapfinder-api]:    https://github.com/tonypujals/snapfinder-api
+[snapfinder]:        https://github.com/tonypujals/snapfinder
