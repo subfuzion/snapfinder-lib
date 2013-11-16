@@ -59,6 +59,7 @@ function formatMapUrl(store) {
 var id = db.stores.find().limit(1).next()._id; db.stores.remove({_id:id});
 
 // add geo support
+print('updating snapdb for geo query support...');
 db.stores.find().forEach(function(store) {
   db.stores.update(
     { _id: store._id },
@@ -75,7 +76,9 @@ db.stores.find().forEach(function(store) {
     });
 });
 
+print('indexing...');
 db.stores.ensureIndex({ "latitude": 1 });
 db.stores.ensureIndex({ "longitude": 1 });
 db.stores.ensureIndex({ "zip5": 1, "zip4": 1 });
 db.stores.ensureIndex({ "loc": "2d" });
+

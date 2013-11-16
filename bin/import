@@ -1,13 +1,15 @@
-#! /bin/sh
+#!/bin/sh
 
-LOCALMONGO=true
+# mongo host ip
+IP=${IP:=127.0.0.1}
+
+alias mongo="mongo --host $IP"
+alias mongoimport="mongoimport --host $IP"
 
 logdb()
 {
-  if $LOCALMONGO ; then
-    timestamp=`date`
-    mongo snapdb --eval "db.harvestlog.insert({timestamp:\"$timestamp\", category:\"$1\", message:\"$2\"})"
-  fi
+  timestamp=`date`
+  mongo snapdb --eval "db.harvestlog.insert({timestamp:\"$timestamp\", category:\"$1\", message:\"$2\"})"
 }
 
 log()
@@ -53,11 +55,9 @@ log "importing data to mongo"
 FIELDS="storeName,longitude,latitude,address1,address2,city,state,zip5,zip4,county"
 #mongoimport -u $APIUSER -p $APIPASS --host $APIHOST --db snapdb --collection stores --fields $FIELDS --type csv --drop < $csv 2>> error.log || error_exit 1 "mongo import failed"
 
-mongoimport --host localhost --db snapdb --collection stores --fields $FIELDS --type csv --drop < $csv 2>> error.log || error_exit 1 "mongo import failed"
+mongoimport --db snapdb --collection stores --fields $FIELDS --type csv --drop < $csv 2>> error.log || error_exit 1 "mongo import failed"
 
-if $LOCALMONGO ; then
-  mongo localhost/snapdb postimport.js
-fi
+mongo snapdb postimport.js
 
 log finished
 
