@@ -1,65 +1,153 @@
 #!/bin/sh
 
-# mongo host ip
-IP=${IP:=127.0.0.1}
+usage()
+{
+cat << EOF
+usage: $0 options
+Download SNAP data from the USDA and import into a MongoDB database.
+Defaults to localhost, no username/password.
 
-alias mongo="mongo --host $IP"
-alias mongoimport="mongoimport --host $IP"
+OPTIONS:
+  -h    show this message
+  -s    mongo host server to connect to
+  -t    mongo port to use
+  -d    mongo database to use
+  -u    mongo database username
+  -p    mongo database password
+  -l    download SNAP data (CSV file) only (mutually exclusive with -i)
+  -i    import specified SNAP CSV file only (mutually exclusive with -l)
 
+EOF
+}
+
+DB=snapdb
+MONGOHOST=127.0.0.1
+MONGOPORT=27017
+MONGOUSER=
+MONGOPWD=
+DLONLY=
+IMPORTONLY=
+CSV=
+
+while getopts "hs:t:d:u:p:li:" OPTION
+do
+  case $OPTION in
+    h)
+      usage
+      exit 1
+      ;;
+    s)
+      MONGOHOST=$OPTARG
+      ;;
+    t)
+      MONGOPORT=$OPTARG
+      ;;
+    d)
+      DB=$OPTARG
+      ;;
+    u)
+      MONGOUSER=$OPTARG
+      ;;
+    p)
+      MONGOPWD=$OPTARG
+      ;;
+    l)
+      DLONLY=1
+      ;;
+    i)
+      IMPORTONLY=1
+      CSV=$OPTARG
+      ;;
+  esac
+done 
+
+MONGOHOST=${MONGOHOST:=127.0.0.1}
+MONGOARGS="$MONGOHOST"
+MONGOIMPORTARGS="--host $MONGOHOST"
+
+if [[ -n $MONGOPORT ]]; then
+  MONGOARGS="$MONGOARGS:$MONGOPORT"
+  MONGOIMPORTARGS="$MONGOIMPORTARGS:$MONGOPORT"
+fi
+
+MONGOARGS="$MONGOARGS/$DB"
+MONGOIMPORTARGS="$MONGOIMPORTARGS --db $DB"
+
+if [[ -n $MONGOUSER ]] && [[ -n $MONGOPWD ]]; then
+  MONGOARGS="$MONGOARGS -u $MONGOUSER -p $MONGOPWD"
+  MONGOIMPORTARGS="$MONGOIMPORTARGS -u $MONGOUSER -p $MONGOPWD"
+fi
+
+alias mongo="mongo $MONGOARGS"
+alias mongoimport="mongoimport $MONGOIMPORTARGS"
+  
 logdb()
 {
   timestamp=`date`
-  mongo snapdb --eval "db.harvestlog.insert({timestamp:\"$timestamp\", category:\"$1\", message:\"$2\"})"
+  mongo --quiet --eval "db.harvestlog.insert({timestamp:\"$timestamp\", category:\"$1\", message:\"$2\"})"
 }
 
 log()
 {
+  # don't create a log or log to database if only downloading data
+  if [ -z $DLONLY ]; then
+    echo "`date +"%b %d %T"` $1" >> import.log
+    logdb info $1
+  fi
+
   echo $1
-  echo "`date +"%b %d %T"` $1" >> import.log
-  logdb info $1
 }
 
 logerror()
 {
+  # don't create a log or log to database if only downloading data
+  if [ -z $DLONLY ]; then
+    echo "`date +"%b %d %T"` $1" >> error.log
+    logdb error $1 
+  fi
+
   echo $1
-  echo "`date +"%b %d %T"` $1" >> error.log
-  logdb error $1 
 }  
 
 error_exit()
 {
-  log "error: $2 (check error.log)"
+  log "error: $2 (there may be more details in error.log)"
   exit ${1:-1}
 }
 
 log started
 
-# currently not necessary since writing to local mongo
-#[ -n "$APIUSER" ] || error_exit 1 "APIUSER environment variable not set"
-#[ -n "$APIPASS" ] || error_exit 1 "APIPASS environment variable not set"
-#[ -n "$APIHOST" ] || error_exit 1 "APIHOST environment variable not set"
+if [ -z $IMPORTONLY ]; then
+  log "downloading snap data"
+  curl -O --fail --silent --show-error  www.snapretailerlocator.com/export/Nationwide.zip 2>> error.log || error_exit 1 "curl failed"
 
-log "downloading snap data"
-curl -O --fail --silent --show-error  www.snapretailerlocator.com/export/Nationwide.zip 2>> error.log || error_exit 1 "curl failed"
+  log "extracting data"
+  unzip -o Nationwide.zip 2>> error.log || error_exit 1 "unzip failed" 
+  CSV=`ls store_locations*.csv`
 
-log "extracting data"
-unzip -o Nationwide.zip 2>> error.log || error_exit 1 "unzip failed" 
-csv=`ls store_locations*.csv`
+  # slice off header row or mongo will either use those names instead of
+  # the provided ones or else will insert as a documenting, depending on
+  # presence of --headerline
+  # tail =n +2 "$CSV"
 
-# slice off header row or mongo will either use those names instead of
-# the provided ones or else will insert as a documenting, depending on
-# presence of --headerline
-# tail =n +2 "$csv"
+  if [ ! -z $DLONLY ]; then
+    echo Downloaded: $CSV
+    exit
+  fi
+fi
 
 log "importing data to mongo"
 FIELDS="storeName,longitude,latitude,address1,address2,city,state,zip5,zip4,county"
-#mongoimport -u $APIUSER -p $APIPASS --host $APIHOST --db snapdb --collection stores --fields $FIELDS --type csv --drop < $csv 2>> error.log || error_exit 1 "mongo import failed"
 
-mongoimport --db snapdb --collection stores --fields $FIELDS --type csv --drop < $csv 2>> error.log || error_exit 1 "mongo import failed"
+mongoimport --collection stores --fields $FIELDS --type csv --drop < $CSV 2>> error.log || error_exit 1 "mongo import failed"
 
-mongo snapdb postimport.js
+if [ -z IMPORTONLY ]; then 
+  rm $CSV
+fi
+
+mongo postimport.js
 
 log finished
 
 # always cleanup
-trap "rm -f *.zip *.csv" EXIT
+trap "rm -f *.zip" EXIT
